@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t static-site:latest .'
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                sh 'docker rm -f static-site || true'
+                sh 'docker run -d -p 3000:80 --name static-site static-site:latest'
+            }
+        }
+    }
+}
